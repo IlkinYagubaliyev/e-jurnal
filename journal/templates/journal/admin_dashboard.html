@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Paneli - ADNSU E-Jurnal{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-adnsu-navy">Admin Paneli</h1>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <a href="{% url 'student_list' %}" class="block">
+            <div
+                class="bg-white overflow-hidden shadow-md rounded-lg hover:shadow-xl transition duration-150 border-t-4 border-adnsu-navy">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-adnsu-navy rounded-md p-3">
+                            <i class="fas fa-user-graduate text-white text-xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Tələbələr</dt>
+                                <dd class="text-2xl font-bold text-adnsu-navy">{{ student_count }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <a href="{% url 'teacher_list' %}" class="block">
+            <div
+                class="bg-white overflow-hidden shadow-md rounded-lg hover:shadow-xl transition duration-150 border-t-4 border-blue-600">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-blue-600 rounded-md p-3">
+                            <i class="fas fa-chalkboard-teacher text-white text-xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Müəllimlər</dt>
+                                <dd class="text-2xl font-bold text-blue-600">{{ teacher_count }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <a href="{% url 'subject_list' %}" class="block">
+            <div
+                class="bg-white overflow-hidden shadow-md rounded-lg hover:shadow-xl transition duration-150 border-t-4 border-amber-500">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-amber-500 rounded-md p-3">
+                            <i class="fas fa-book text-white text-xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Fənlər</dt>
+                                <dd class="text-2xl font-bold text-amber-500">{{ subject_count }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <a href="{% url 'group_list' %}" class="block">
+            <div
+                class="bg-white overflow-hidden shadow-md rounded-lg hover:shadow-xl transition duration-150 border-t-4 border-emerald-600">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-emerald-600 rounded-md p-3">
+                            <i class="fas fa-users text-white text-xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Qruplar</dt>
+                                <dd class="text-2xl font-bold text-emerald-600">{{ group_count }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-adnsu-navy mb-4">Əməliyyatlar</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="{% url 'create_student' %}"
+                class="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md text-white bg-adnsu-navy hover:bg-adnsu-blue md:py-4 md:text-lg md:px-10 transition duration-150 shadow-sm">
+                <i class="fas fa-user-plus mr-2"></i> Yeni Tələbə
+            </a>
+            <a href="{% url 'create_teacher' %}"
+                class="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition duration-150 shadow-sm">
+                <i class="fas fa-chalkboard-teacher mr-2"></i> Yeni Müəllim
+            </a>
+            <a href="{% url 'teacher_list' %}"
+                class="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md text-adnsu-navy bg-blue-50 hover:bg-blue-100 md:py-4 md:text-lg md:px-10 transition duration-150 shadow-sm">
+                <i class="fas fa-tasks mr-2"></i> Müəllim Təyinatı
+            </a>
+            <a href="{% url 'create_subject' %}"
+                class="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md text-adnsu-navy bg-amber-50 hover:bg-amber-100 md:py-4 md:text-lg md:px-10 transition duration-150 shadow-sm">
+                <i class="fas fa-book-open mr-2"></i> Yeni Fənn
+            </a>
+            <a href="{% url 'create_group' %}"
+                class="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md text-adnsu-navy bg-emerald-50 hover:bg-emerald-100 md:py-4 md:text-lg md:px-10 transition duration-150 shadow-sm">
+                <i class="fas fa-users mr-2"></i> Yeni Qrup
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

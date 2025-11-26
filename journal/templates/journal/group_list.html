@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Qruplar - Universitet Jurnalı{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Qruplar Siyahısı</h3>
+        <a href="{% url 'admin_dashboard' %}" class="text-indigo-600 hover:text-indigo-900">Geri qayıt</a>
+    </div>
+    <div class="border-t border-gray-200">
+        <ul role="list" class="divide-y divide-gray-200">
+            {% for group in groups %}
+            <li class="px-4 py-4 sm:px-6 hover:bg-gray-50 transition duration-150">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-red-500 rounded-md p-2">
+                            <i class="fas fa-users text-white"></i>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900">{{ group.name }}</div>
+                        </div>
+                    </div>
+                    <div class="ml-2 flex-shrink-0 flex">
+                        <span
+                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                            {{ group.studentprofile_set.count }} Tələbə
+                        </span>
+                    </div>
+                </div>
+            </li>
+            {% empty %}
+            <li class="px-4 py-4 sm:px-6 text-center text-gray-500">Heç bir qrup tapılmadı.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

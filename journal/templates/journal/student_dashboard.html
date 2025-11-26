@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Tələbə Paneli - Universitet Jurnalı{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-gray-900">Tələbə Paneli</h1>
+    </div>
+
+    <!-- Grades Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for grade in grades %}
+        <div
+            class="bg-white overflow-hidden shadow rounded-lg border-l-4 {% if grade.is_passed %}border-green-500{% else %}border-red-500{% endif %}">
+            <div class="p-5">
+                <div class="flex justify-between items-start">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">{{ grade.subject.name }}</h3>
+                    <span
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if grade.is_passed %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                        {{ grade.calculate_total }} Bal
+                    </span>
+                </div>
+                <div class="mt-4 space-y-2 text-sm text-gray-500">
+                    <div class="flex justify-between">
+                        <span>Midterm:</span>
+                        <span class="font-medium text-gray-900">{{ grade.midterm }} / 20</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Təqdimat:</span>
+                        <span class="font-medium text-gray-900">{{ grade.presentation }} / 20</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Aktivlik:</span>
+                        <span class="font-medium text-gray-900">{{ grade.activity }} / 10</span>
+                    </div>
+                    <div class="flex justify-between border-t pt-2">
+                        <span>Final:</span>
+                        <span class="font-medium text-gray-900">{{ grade.final }} / 50</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center text-gray-500 py-10">
+            Hələ heç bir qiymətiniz yoxdur.
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Charts Section -->
+    {% if grades %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Fənlər üzrə Bal Paylanması</h3>
+            <canvas id="gradesChart"></canvas>
+        </div>
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Sizin Bal vs Ortalama</h3>
+            <canvas id="comparisonChart"></canvas>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if grades %}
+{{ labels|json_script:"labels-data" }}
+{{ student_scores|json_script:"scores-data" }}
+{{ averages|json_script:"averages-data" }}
+
+<script>
+    const labels = JSON.parse(document.getElementById('labels-data').textContent);
+    const studentScores = JSON.parse(document.getElementById('scores-data').textContent);
+    const averages = JSON.parse(document.getElementById('averages-data').textContent);
+
+    // Grades Chart
+    const ctx1 = document.getElementById('gradesChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Sizin Balınız',
+                data: studentScores,
+                backgroundColor: 'rgba(79, 70, 229, 0.6)',
+                borderColor: 'rgba(79, 70, 229, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+
+    // Comparison Chart
+    const ctx2 = document.getElementById('comparisonChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Sizin Balınız',
+                data: studentScores,
+                borderColor: 'rgba(79, 70, 229, 1)',
+                backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                tension: 0.3,
+                fill: true
+            }, {
+                label: 'Qrup Ortalaması',
+                data: averages,
+                borderColor: 'rgba(16, 185, 129, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Tələbələr - Universitet Jurnalı{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Tələbələr Siyahısı</h3>
+        <a href="{% url 'admin_dashboard' %}" class="text-adnsu-navy hover:text-adnsu-blue">Geri qayıt</a>
+    </div>
+    <div class="border-t border-gray-200">
+        <ul role="list" class="divide-y divide-gray-200">
+            {% for student in students %}
+            <li class="hover:bg-gray-50 transition duration-150">
+                <a href="{% url 'edit_student' student.id %}" class="block px-4 py-4 sm:px-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div
+                                class="flex-shrink-0 h-10 w-10 rounded-full bg-adnsu-navy bg-opacity-10 flex items-center justify-center text-adnsu-navy font-bold text-lg">
+                                {{ student.user.first_name|first }}{{ student.user.last_name|first }}
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-adnsu-navy truncate">{{ student.user.get_full_name }}</div>
+                                <div class="text-sm text-gray-500">{{ student.user.email }}</div>
+                            </div>
+                        </div>
+                        <div class="ml-2 flex-shrink-0 flex items-center space-x-2">
+                            <span
+                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                {{ student.group.name|default:"Qrup yoxdur" }}
+                            </span>
+                            <i class="fas fa-edit text-gray-400"></i>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            {% empty %}
+            <li class="px-4 py-4 sm:px-6 text-center text-gray-500">Heç bir tələbə tapılmadı.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

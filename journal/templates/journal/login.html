@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Giriş - ADNSU E-Jurnal{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[80vh]">
+    <div class="w-full max-w-md bg-white rounded-lg shadow-lg p-8 border-t-4 border-adnsu-navy">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-adnsu-navy">Xoş Gəlmisiniz</h1>
+            <p class="text-gray-600 mt-2">Zəhmət olmasa hesabınıza daxil olun</p>
+        </div>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-md text-sm">
+                <i class="fas fa-exclamation-circle mr-2"></i>İstifadəçi adı və ya şifrə yanlışdır.
+            </div>
+            {% endif %}
+
+            <div>
+                <label for="id_username" class="block text-sm font-medium text-gray-700">İstifadəçi adı</label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-user text-gray-400"></i>
+                    </div>
+                    <input type="text" name="username" id="id_username" required
+                        class="focus:ring-adnsu-navy focus:border-adnsu-navy block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 border"
+                        placeholder="İstifadəçi adınızı daxil edin">
+                </div>
+            </div>
+
+            <div>
+                <label for="id_password" class="block text-sm font-medium text-gray-700">Şifrə</label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-gray-400"></i>
+                    </div>
+                    <input type="password" name="password" id="id_password" required
+                        class="focus:ring-adnsu-navy focus:border-adnsu-navy block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 border"
+                        placeholder="Şifrənizi daxil edin">
+                </div>
+            </div>
+
+            <div>
+                <button type="submit"
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-semibold text-white bg-adnsu-navy hover:bg-adnsu-blue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-adnsu-navy transition duration-150">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Daxil ol
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

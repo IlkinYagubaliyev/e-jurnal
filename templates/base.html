@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ADNSU E-Jurnal{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'adnsu-navy': '#0A1F44',
+                        'adnsu-blue': '#1E3A5F',
+                        'adnsu-light': '#F8FAFC',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="bg-adnsu-light text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-adnsu-navy shadow-lg">
+        <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+            <div class="flex justify-between items-center h-14">
+                <div class="flex items-center flex-shrink-0">
+                    {% load static %}
+                    <a href="{% url 'home' %}" class="flex items-center">
+                        <img src="{% static 'logo.png' %}" alt="ADNSU Logo" class="h-5 sm:h-8 w-auto object-contain">
+                    </a>
+                </div>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    {% if user.is_authenticated %}
+                    <div class="flex items-center space-x-2 sm:space-x-3">
+                        <div class="flex items-center bg-adnsu-blue px-2 sm:px-4 py-2 rounded-lg">
+                            <i class="fas fa-user-circle text-white text-lg sm:text-xl"></i>
+                            <span class="text-white font-medium ml-2">{{ user.first_name|default:user.username }}</span>
+                            <span class="hidden sm:inline text-white font-medium">{% if user.last_name %} {{ user.last_name }}{% endif %}</span>
+                        </div>
+                        <form action="{% url 'logout' %}" method="post" class="inline">
+                            {% csrf_token %}
+                            <button type="submit"
+                                class="flex items-center px-2 sm:px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition duration-150 font-medium">
+                                <i class="fas fa-sign-out-alt sm:mr-2"></i>
+                                <span class="hidden sm:inline">Çıxış</span>
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div
+                class="p-4 mb-4 rounded-lg shadow-sm {% if message.tags == 'error' %}bg-red-50 border-l-4 border-red-500 text-red-700{% else %}bg-green-50 border-l-4 border-green-500 text-green-700{% endif %}">
+                <div class="flex items-center">
+                    <i
+                        class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} mr-3"></i>
+                    <span>{{ message }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-adnsu-navy text-white mt-auto">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">ADNSU</h3>
+                    <p class="text-gray-300 text-sm">Azərbaycan Dövlət Neft və Sənaye Universiteti</p>
+                    <p class="text-gray-400 text-xs mt-2">Əsası 1920-ci ildə qoyulmuşdur</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Əlaqə</h3>
+                    <p class="text-gray-300 text-sm">
+                        <i class="fas fa-map-marker-alt mr-2"></i>Bakı, Azərbaycan
+                    </p>
+                    <p class="text-gray-300 text-sm mt-2">
+                        <i class="fas fa-envelope mr-2"></i>info@adnsu.edu.az
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Sistem</h3>
+                    <p class="text-gray-300 text-sm">Elektron Jurnal Sistemi</p>
+                    <p class="text-gray-400 text-xs mt-2">&copy; {% now "Y" %} Bütün hüquqlar qorunur</p>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center">
+                <p class="text-white text-base font-medium">Site by İlkin Yaqubəliyev</p>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+
+</html>

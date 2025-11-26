@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block title %}Qiymətləndirmə - {{ subject.name }} - {{ group.name }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">{{ subject.name }}</h1>
+            <p class="text-gray-600">{{ group.name }}</p>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="bg-adnsu-navy-100 px-4 py-2 rounded-lg">
+                <span class="text-sm font-medium text-adnsu-navy-800">Ortalama Bal:</span>
+                <span class="text-lg font-bold text-adnsu-navy-900">{{ group_average }}</span>
+            </div>
+            <a href="{% url 'teacher_dashboard' %}" class="text-adnsu-navy-600 hover:text-adnsu-navy-900">Geri qayıt</a>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Qrup üzrə nəticələr</h3>
+        <div class="relative h-64">
+            <canvas id="gradesChart"></canvas>
+        </div>
+    </div>
+
+    <form method="post" class="bg-white shadow overflow-hidden sm:rounded-lg">
+        {% csrf_token %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Tələbə</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Midterm (20)</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Təqdimat (20)</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Aktivlik (10)</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Final
+                            (50)</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cəmi
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for item in student_data %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">{{ item.student.user.get_full_name }}</div>
+                            <div class="text-sm text-gray-500">{{ item.student.user.email }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="number" name="midterm_{{ item.student.id }}"
+                                value="{{ item.grade.midterm|default:0 }}" min="0" max="20"
+                                class="w-20 border-gray-300 rounded-md shadow-sm focus:ring-adnsu-navy-500 focus:border-adnsu-navy-500 sm:text-sm border p-1">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="number" name="presentation_{{ item.student.id }}"
+                                value="{{ item.grade.presentation|default:0 }}" min="0" max="20"
+                                class="w-20 border-gray-300 rounded-md shadow-sm focus:ring-adnsu-navy-500 focus:border-adnsu-navy-500 sm:text-sm border p-1">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="number" name="activity_{{ item.student.id }}"
+                                value="{{ item.grade.activity|default:0 }}" min="0" max="10"
+                                class="w-20 border-gray-300 rounded-md shadow-sm focus:ring-adnsu-navy-500 focus:border-adnsu-navy-500 sm:text-sm border p-1">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="number" name="final_{{ item.student.id }}"
+                                value="{{ item.grade.final|default:0 }}" min="0" max="50"
+                                class="w-20 border-gray-300 rounded-md shadow-sm focus:ring-adnsu-navy-500 focus:border-adnsu-navy-500 sm:text-sm border p-1">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span id="total_{{ item.student.id }}" class="text-sm font-bold text-gray-900">{{
+                                item.grade.calculate_total|default:0 }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if item.grade %}
+                            <span id="status_{{ item.student.id }}"
+                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if item.grade.is_passed %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {% if item.grade.is_passed %}Keçdi{% else %}Kəsildi{% endif %} ({{
+                                item.grade.get_letter_grade }})
+                            </span>
+                            {% else %}
+                            <span id="status_{{ item.student.id }}" class="text-gray-400">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+            <button type="submit"
+                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-adnsu-navy-600 hover:bg-adnsu-navy-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-adnsu-navy-500 transition duration-150">
+                Yadda saxla
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Chart.js initialization
+        const ctx = document.getElementById('gradesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ chart_labels| safe }},
+        datasets: [{
+            label: 'Yekun Bal',
+            data: {{ chart_data| safe }},
+        backgroundColor: 'rgba(79, 70, 229, 0.5)',
+        borderColor: 'rgba(79, 70, 229, 1)',
+        borderWidth: 1
+                }]
+            },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    }
+        });
+
+    // Real-time calculation logic
+    const inputs = document.querySelectorAll('input[type="number"]');
+
+    function calculateTotal(studentId) {
+        const midterm = parseInt(document.querySelector(`input[name="midterm_${studentId}"]`).value) || 0;
+        const presentation = parseInt(document.querySelector(`input[name="presentation_${studentId}"]`).value) || 0;
+        const activity = parseInt(document.querySelector(`input[name="activity_${studentId}"]`).value) || 0;
+        const final = parseInt(document.querySelector(`input[name="final_${studentId}"]`).value) || 0;
+
+        const total = midterm + presentation + activity + final;
+        document.getElementById(`total_${studentId}`).textContent = total;
+
+        updateStatus(studentId, total);
+    }
+
+    function updateStatus(studentId, total) {
+        const statusElement = document.getElementById(`status_${studentId}`);
+        let letter = 'F';
+        let passed = false;
+
+        if (total >= 91) letter = 'A';
+        else if (total >= 81) letter = 'B';
+        else if (total >= 71) letter = 'C';
+        else if (total >= 61) letter = 'D';
+        else if (total >= 51) letter = 'E';
+
+        if (total >= 51) passed = true;
+
+        statusElement.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${passed ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+        statusElement.textContent = `${passed ? 'Keçdi' : 'Kəsildi'} (${letter})`;
+    }
+
+    inputs.forEach(input => {
+        input.addEventListener('input', function () {
+            const studentId = this.name.split('_')[1];
+            calculateTotal(studentId);
+        });
+    });
+
+    // Calculate totals on page load to ensure UI is consistent
+    const studentRows = document.querySelectorAll('tbody tr');
+    studentRows.forEach(row => {
+        const midtermInput = row.querySelector('input[name^="midterm_"]');
+        if (midtermInput) {
+            const studentId = midtermInput.name.split('_')[1];
+            calculateTotal(studentId);
+        }
+    });
+    });
+</script>
+{% endblock %}
